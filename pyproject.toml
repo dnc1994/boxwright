@@ -12,7 +12,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = [
+    "modal>=1.6.1",
+    "pytest>=8",
+    "wandb>=0.30.0",
+]
 
 [tool.uv.sources]
 boxwright-solver = { path = "solver" }
