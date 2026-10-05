@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Rust
+target/
+
+# Data, checkpoints, experiment logs
+data/
+checkpoints/
+wandb/
+*.parquet
+*.onnx
+
+# Web
+node_modules/
+web/dist/
+
+.DS_Store
