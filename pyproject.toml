@@ -4,10 +4,13 @@ version = "0.1.0"
 description = "A small language model that designs solvable Sokoban levels at a requested difficulty"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["boxwright-solver"]
 
 [dependency-groups]
 dev = ["pytest>=8"]
+
+[tool.uv.sources]
+boxwright-solver = { path = "solver" }
 
 [build-system]
 requires = ["hatchling"]

@@ -1,0 +1,17 @@
+[project]
+name = "boxwright-solver"
+version = "0.1.0"
+description = "Move-optimal Sokoban solver (Rust) for Boxwright"
+requires-python = ">=3.12"
+
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["python"]
+module-name = "boxwright_solver"
+
+[tool.uv]
+# Rebuild the extension whenever the Rust sources change.
+cache-keys = [{ file = "pyproject.toml" }, { file = "Cargo.toml" }, { file = "src/**/*.rs" }]

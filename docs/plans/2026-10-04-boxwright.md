@@ -28,9 +28,11 @@ See [`../design-decisions.md`](../design-decisions.md) (D1–D12, accepted 2026-
 **Contracts**
 
 ```
-solver.solve(level: str, max_nodes: int) -> Solution | None
-  Solution: pushes: int, moves: int, path: str, nodes_expanded: int
-solver.solve_batch(levels: list[str], max_nodes: int, threads: int) -> list[Solution | None]
+boxwright_solver.solve(level: str, max_nodes=1_000_000) -> Solution
+boxwright_solver.solve_batch(levels: list[str], max_nodes=1_000_000, threads=None) -> list[Solution]
+boxwright_solver.verify(level: str, path: str) -> bool
+  Solution: status ("solved" | "unsolvable" | "budget_exceeded" | "invalid"), solved, moves, pushes,
+            path (LURD), nodes_expanded, error. Never raises on bad levels, so RL rewards can batch freely.
 
 reward(level_text: str, target_bucket: int) -> RewardBreakdown
   RewardBreakdown: valid, playable, difficulty_match, novel, total (all floats, logged separately)
@@ -44,9 +46,10 @@ reward(level_text: str, target_bucket: int) -> RewardBreakdown
   - `uv` Python project, Rust workspace, `web/` stub, git repo, README stating the thesis (W&B project deferred until the first training run, since it needs your login)
   - Acceptance: `uv run pytest` and `cargo test` both pass on empty suites
 
-- [ ] **Task 2: Rust solver + bindings**
+- [x] **Task 2: Rust solver + bindings**
   - Move-optimal A* with simple deadlock detection (dead squares, frozen boxes), node budget, solution path output; rayon batch API; pyo3 module
-  - Acceptance: solves 99%+ of the Boxoban medium validation set within budget; optimal push counts match a reference solver on a sample; throughput of at least 1k levels/s across cores (needed for RL)
+  - Acceptance: solves 99%+ of the Boxoban medium validation set within budget; optimal move counts match a reference solver on a sample; throughput of at least 1k levels/s across cores (needed for RL)
+  - Result: medium/valid 50,000/50,000 solved (1M-node budget), all paths verified, move counts match all 49,848 valid reference labels; unfiltered/test 1,000/1,000 solved, one label beaten (23 vs. 24 moves, our path verified). ~1,170 levels/s on a 10-core M-series Mac. `scripts/validate_solver.py` reproduces this.
   - Files: `solver/`, `tests/test_solver.py`
 
 - [ ] **Task 3: Dataset pipeline**

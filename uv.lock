@@ -6,6 +6,9 @@ requires-python = ">=3.12"
 name = "boxwright"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "boxwright-solver" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -13,9 +16,15 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "boxwright-solver", directory = "solver" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8" }]
+
+[[package]]
+name = "boxwright-solver"
+version = "0.1.0"
+source = { directory = "solver" }
 
 [[package]]
 name = "colorama"
