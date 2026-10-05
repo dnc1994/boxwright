@@ -8,9 +8,9 @@ __pycache__/
 target/
 
 # Data, checkpoints, experiment logs
-data/
-checkpoints/
-wandb/
+/data/
+/checkpoints/
+/wandb/
 *.parquet
 *.onnx
 
