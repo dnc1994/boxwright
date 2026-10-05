@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "A small language model that designs solvable Sokoban levels at a requested difficulty"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["boxwright-solver"]
+dependencies = [
+    "boxwright-solver",
+    "numpy>=2.5.3",
+    "pyarrow>=25.0.1",
+    "torch>=2.14.1",
+]
 
 [dependency-groups]
 dev = ["pytest>=8"]

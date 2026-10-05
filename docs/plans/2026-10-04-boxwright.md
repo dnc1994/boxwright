@@ -52,14 +52,16 @@ reward(level_text: str, target_bucket: int) -> RewardBreakdown
   - Result: medium/valid 50,000/50,000 solved (1M-node budget), all paths verified, move counts match all 49,848 valid reference labels; unfiltered/test 1,000/1,000 solved, one label beaten (23 vs. 24 moves, our path verified). ~1,170 levels/s on a 10-core M-series Mac. `scripts/validate_solver.py` reproduces this.
   - Files: `solver/`, `tests/test_solver.py`
 
-- [ ] **Task 3: Dataset pipeline**
+- [x] **Task 3: Dataset pipeline**
   - Download Boxoban (unfiltered + medium + hard), label every level with the solver, compute difficulty buckets, 8× dihedral augmentation, deduplicated train/val/test splits, novelty hash index
   - Acceptance: Parquet shards plus a dataset card with stats (difficulty histogram, % solvable, dedup counts)
+  - Result: all 1,503,245 Boxoban levels solved within budget; 1,087 symmetric duplicates removed; train 1.35M levels with balanced buckets (114k–161k each). Card: `docs/dataset.md`. Augmentation is applied at load time rather than stored.
   - Files: `boxwright/data/`
 
-- [ ] **Task 4: Tokenizer**
+- [x] **Task 4: Tokenizer**
   - Tile vocab, control tokens, encode/decode, structural validity check (10×10, exactly 1 player, boxes == goals)
   - Acceptance: lossless round-trip on the full dataset; validity check agrees with the solver's parser
+  - Result: 0 mismatches over 1,503,245 levels; validity agrees with the solver parser on 3,000 fuzzed/mutated grids. 21-token vocab, 103 tokens per level.
   - Files: `boxwright/tokenizer.py`, `tests/test_tokenizer.py`
 
 - [ ] **Task 5: Model + pretraining**
