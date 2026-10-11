@@ -67,6 +67,17 @@ reward(level_text: str, target_bucket: int) -> RewardBreakdown
 - [ ] **Task 5: Model + pretraining**
   - Decoder at ~3 sizes (6M / 20M / 50M) (5M / 20M / 50M); Muon for hidden matrices, AdamW for embeddings and head; bf16; torch.compile; cosine/WSD schedule; checkpoints; sample grids logged to W&B during training
   - Acceptance: the 50M model reaches stable val loss; unconditional samples are ≥95% structurally valid; the conditioned model shows a monotonic relation between requested and actual difficulty
+  - Sweep (2026-10-05, H100 on Modal, 20k steps × 512 levels ≈ 1B tokens each; 500 conditional samples per eval):
+
+    | Run | Val loss | Valid | Solvable (all novel) | Bucket ±1 | Spearman | Wall time |
+    |---|---:|---:|---:|---:|---:|---:|
+    | 6M 2D Muon | 0.3725 | 99.8% | 89.0% | 76.4% | 0.875 | 6 min |
+    | 20M 2D Muon | 0.3699 | 99.8% | 91.8% | 80.0% | 0.901 | 15 min |
+    | 50M 2D Muon | 0.3693 | 99.8% | 91.8% | 81.7% | 0.911 | 27 min |
+    | 20M 1D Muon | 0.3699 | 100% | 91.0% | 80.0% | 0.892 | 15 min |
+    | 20M 2D AdamW | 0.3724 | 99.8% | 88.6% | 72.9% | 0.856 | 14 min |
+
+    Not yet measured: unconditional-sample validity (Task 6 harness). Task stays open until then.
   - Files: `boxwright/model.py`, `boxwright/train_pretrain.py`
 
 - [ ] **Task 6: Eval harness**

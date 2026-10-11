@@ -94,6 +94,10 @@ Note to check: whether the Boxoban outer ring is always wall. If so, we could pr
 
 **Recommendation:** Use 2D axial RoPE; run 1D RoPE as an ablation. The ablation is cheap, and the result is a clean chart for the writeup.
 
+**As built:** queries are rotated by the coordinates of the cell being predicted and keys by the cell they hold, so attention scores depend on (target cell − key cell), with no special case at row wraps.
+
+**Finding (2026-10-05 sweep, 20M):** no measurable difference vs. 1D RoPE (val loss 0.3699 both; solvable 91.8% vs. 91.0%, within sampling noise). Keeping 2D as the default since it costs nothing; the writeup reports this as a null result.
+
 ---
 
 ## D6 — Architecture & size
@@ -119,6 +123,8 @@ A rough Chinchilla estimate (~20 tokens per parameter) suggests ~50M parameters 
 - **Warmup-stable-decay (WSD)** schedule: a branch can decay from any stable-phase checkpoint, so the data-scaling ablation costs nothing extra.
 - bf16 autocast, `torch.compile`.
 - **One AdamW-only control run** at the 20M size, to show the Muon gain with our own numbers rather than claiming it.
+
+**Finding (2026-10-05 sweep, 20M, one lr each):** Muon beat AdamW at equal steps: val loss 0.3699 vs. 0.3724 (about the gap between the 6M and 20M models), solvable 91.8% vs. 88.6%, bucket ±1 80.0% vs. 72.9%. Not lr-tuned, so treat as indicative.
 
 ---
 
