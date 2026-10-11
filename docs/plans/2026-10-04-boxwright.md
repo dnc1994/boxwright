@@ -64,7 +64,7 @@ reward(level_text: str, target_bucket: int) -> RewardBreakdown
   - Result: 0 mismatches over 1,503,245 levels; validity agrees with the solver parser on 3,000 fuzzed/mutated grids. 21-token vocab, 103 tokens per level.
   - Files: `boxwright/tokenizer.py`, `tests/test_tokenizer.py`
 
-- [ ] **Task 5: Model + pretraining**
+- [x] **Task 5: Model + pretraining**
   - Decoder at ~3 sizes (6M / 20M / 50M) (5M / 20M / 50M); Muon for hidden matrices, AdamW for embeddings and head; bf16; torch.compile; cosine/WSD schedule; checkpoints; sample grids logged to W&B during training
   - Acceptance: the 50M model reaches stable val loss; unconditional samples are ≥95% structurally valid; the conditioned model shows a monotonic relation between requested and actual difficulty
   - Sweep (2026-10-05, H100 on Modal, 20k steps × 512 levels ≈ 1B tokens each; 500 conditional samples per eval):
@@ -77,12 +77,20 @@ reward(level_text: str, target_bucket: int) -> RewardBreakdown
     | 20M 1D Muon | 0.3699 | 100% | 91.0% | 80.0% | 0.892 | 15 min |
     | 20M 2D AdamW | 0.3724 | 99.8% | 88.6% | 72.9% | 0.856 | 14 min |
 
-    Not yet measured: unconditional-sample validity (Task 6 harness). Task stays open until then.
+    Unconditional samples (Task 6 harness, 20M, 1,000 samples): 99.9% valid, 91.6% playable. Chosen for RL: 20M 2D Muon (matches 50M on playability, ~2.4× cheaper to sample).
   - Files: `boxwright/model.py`, `boxwright/train_pretrain.py`
 
-- [ ] **Task 6: Eval harness**
+- [x] **Task 6: Eval harness**
   - Metrics: valid, playable, novel, diverse, Todd's combined "score", difficulty accuracy (within ±tolerance) and a calibration curve, nearest-neighbor edit distance, samples/sec
   - Acceptance: one command evaluates any checkpoint (or text file of levels) and emits JSON + plots; deterministic given a seed
+  - Result: `boxwright/eval/harness.py` + `infra/modal_app.py::evaluate`. Novelty and diversity follow Todd et al.'s code exactly (edit distance ≥ 5 on raw text; diversity as a greedy lower bound on their clique). Same-seed runs produce byte-identical outputs. 20M pretrained baseline, 2,000 conditional + 1,000 unconditional samples:
+
+    | Group | Valid | Playable | Novel | Score (Todd) | Bucket exact / ±1 | Spearman |
+    |---|---:|---:|---:|---:|---:|---:|
+    | Conditional | 99.8% | 91.3% | 98.6% | 0.900 | 41.1% / 80.2% | 0.895 |
+    | Unconditional | 99.9% | 91.6% | 98.6% | 0.904 | – | – |
+
+    Playability falls with requested difficulty (97% at d0 → 79% at d9). Scoring 3,000 samples takes ~18 min on 16 Modal CPUs (mostly nearest-neighbour edit distance); fine for checkpoint evals, too slow for inner RL loops, which use the cheap exact-match novelty instead.
   - Files: `boxwright/eval/`
 
 - [ ] **Task 7: Reproduce Todd et al. baseline**
